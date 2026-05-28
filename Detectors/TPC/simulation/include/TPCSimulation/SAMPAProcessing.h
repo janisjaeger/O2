@@ -163,7 +163,13 @@ inline float SAMPAProcessing::makeSignal(float ADCcounts, const int sector, cons
 
   const float signal = ADCcounts;
   const float pedestalCRU = getPedestalCRU(sector, globalPadInSector);
-  const float fullSignal = signal - commonMode + noise + pedestal + (tot > 0 ? 80 : 0); // TODO: improve to also add tail
+  float fullSignal = signal - commonMode + noise + pedestal; // + (tot > 0 ? 80 : 0); // TODO: improve to also add tail
+  float t = (43.f - tot);
+  if (t > 0.f) { 
+    fullSignal += 80 + t * (-0.3103) + t * t * (-0.02362);
+  } else {
+    fullSignal += 80;
+  }	  
 
   switch (MODE) {
     case DigitzationMode::FullMode: {
